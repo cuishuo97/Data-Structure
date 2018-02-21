@@ -1,6 +1,6 @@
 //Array Management Tool
 //Version 1.0 20180221
-//2018-02-21 19:09:43
+//2018-02-21 19:34:13
 //CopyRight ©2018 CuiShuo. All rights reserved.
 
 #include <stdio.h>
@@ -22,7 +22,7 @@ bool arr_remove(struct Array *pArr, int pos);                //删除
 bool arr_removeall(struct Array *pArr);                      //删除全部元素
 void arr_sort(struct Array *pArr);                           //从小到大排序
 void arr_reverse(struct Array *pArr);                        //倒序
-void arr_show(struct Array *pArr);                           //
+void arr_show(struct Array *pArr);                           //输出数组
 void arr_sum(struct Array *pArr);                            //求和
 void arr_avg(struct Array *pArr);                            //求平均数
 void arr_slice(struct Array *pArr, int a, int b);            //切片(Beta)
