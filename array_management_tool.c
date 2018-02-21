@@ -1,6 +1,6 @@
 //Array Management Tool
 //Version 1.0 20180221
-//2018-02-21 19:34:13
+//2018-02-21 20:51:56
 //CopyRight ©2018 CuiShuo. All rights reserved.
 
 #include <stdio.h>
@@ -14,11 +14,11 @@ struct Array {
     //int increment;   //自动增长因子
 };
 
-void arr_init(struct Array *pArr, int length);               //初始化
+void arr_init(struct Array *pArr, int length);               //数组初始化
 bool arr_add(struct Array *pArr, int val);                   //在尾部追加
 bool arr_add_range(struct Array *pArr, int a, int b);        //在尾部追加一定序列的整数(Beta)
 bool arr_insert(struct Array *pArr, int pos, int val);       //插入（pos的值从1开始）
-bool arr_remove(struct Array *pArr, int pos);                //删除
+bool arr_remove(struct Array *pArr, int pos);                //删除指定元素
 bool arr_removeall(struct Array *pArr);                      //删除全部元素
 void arr_sort(struct Array *pArr);                           //从小到大排序
 void arr_reverse(struct Array *pArr);                        //倒序
@@ -26,26 +26,29 @@ void arr_show(struct Array *pArr);                           //输出数组
 void arr_sum(struct Array *pArr);                            //求和
 void arr_avg(struct Array *pArr);                            //求平均数
 void arr_slice(struct Array *pArr, int a, int b);            //切片(Beta)
-bool arr_find(struct Array *pArr, int search);               //遍历数组
-bool is_empty(struct Array *pArr);
-bool is_full(struct Array *pArr);
+bool arr_find(struct Array *pArr, int search);               //查找数组元素
+bool is_empty(struct Array *pArr);                           //判断数组是否为空
+bool is_full(struct Array *pArr);                            //判断数组是否已满
 
 int main() {
-    int arr_num;
     struct Array arr;
+    int arr_num;
 
-    printf("请输入需要新建的数组个数:");
+    printf("Please input the number of arrays you need to build:");
     scanf("%d", &arr_num);
 
     arr_init(&arr, arr_num);
+
+    arr_add_range(&arr, 1, 6);
+
     arr_show(&arr);
 
-    arr_add(&arr, 1);
+    /*arr_add(&arr, 1);
     arr_add(&arr, 2);
     arr_add(&arr, 3);
     arr_add(&arr, 4);
     arr_add(&arr, 5);
-    
+
     arr_reverse(&arr);
     arr_show(&arr);
 
@@ -54,19 +57,20 @@ int main() {
 
     arr_find(&arr, 4);
     arr_sum(&arr);
-    arr_avg(&arr);
+    arr_avg(&arr);*/
 
-    arr_add_range(&arr,1,20);
+    arr_add_range(&arr,6,21);
     arr_show(&arr);
-    printf("%d %d", arr.len, arr.cnt);
+
     return 0;
 }
 
+//数组初始化
 void arr_init(struct Array *pArr, int length) {
     pArr->pBase = (int *)malloc(sizeof(int) * length);
 
     if (NULL == pArr->pBase) {
-        printf("memory allocate failed.\n");    //动态内存分配失败
+        printf("emory allocate failed.\n");    //动态内存分配失败
         exit(-1);
     }
     else {
@@ -75,6 +79,7 @@ void arr_init(struct Array *pArr, int length) {
     }
 }
 
+//在尾部追加
 bool arr_add(struct Array *pArr, int val) {
     if (is_full(pArr)) {
         pArr->pBase = (int *)realloc(pArr->pBase, sizeof(int) * pArr->len+1);    //动态扩大内存
@@ -90,7 +95,8 @@ bool arr_add(struct Array *pArr, int val) {
 
 }
 
-bool arr_add_range(struct Array *pArr, int a, int b) {     //Beta
+//在尾部追加一定序列的整数(Beta)
+bool arr_add_range(struct Array *pArr, int a, int b) {
     for (int i = a; i < b; ++i) {
         pArr->pBase = (int *)realloc(pArr->pBase, sizeof(int) * pArr->len+1);    //动态扩大内存
         pArr->pBase[pArr->cnt] = i;
@@ -100,6 +106,7 @@ bool arr_add_range(struct Array *pArr, int a, int b) {     //Beta
     return true;
 }
 
+//插入（pos的值从1开始）
 bool arr_insert(struct Array *pArr, int pos, int val) {
     if (is_full(pArr)) {
         //pArr->pBase = (int *)realloc(pArr->pBase, sizeof(int) * pArr->len+1);    //动态扩大内存
@@ -107,7 +114,7 @@ bool arr_insert(struct Array *pArr, int pos, int val) {
         return false;
     }
     if (pos<1 || pos>pArr->cnt+1) {
-        printf("insert failed\n");
+        printf("Invalid argument\n");
         return false;
     }
     for (int i = pArr->cnt-1; i >= pos-1; --i) {
@@ -115,30 +122,32 @@ bool arr_insert(struct Array *pArr, int pos, int val) {
     }
     pArr->pBase[pos-1] = val;
     (pArr->cnt)++;
-    printf("insert successfully\n");
+    printf("Insert successfully\n");
     return true;
 }
 
+//删除指定元素
 bool arr_remove(struct Array *pArr, int pos) {
     if (is_empty(pArr)) {
-        printf("remove failed\n");
+        printf("Remove failed\n");
         return false;
     }
     if (pos < 1 || pos > pArr->cnt) {
-        printf("remove failed\n");
+        printf("Invalid argument\n");
         return false;
     }
     for (int i = pos; i < pArr->cnt; ++i) {
         pArr->pBase[i-1] = pArr->pBase[i];
     }
     pArr->cnt--;
-    printf("remove successfully\n");
+    printf("Remove successfully\n");
     return true;
 }
 
+//删除全部元素
 bool arr_removeall(struct Array *pArr) {
     if (is_empty(pArr)) {
-        printf("remove all array failed\n");
+        printf("Remove all array failed\n");
         return false;
     }
 
@@ -146,10 +155,11 @@ bool arr_removeall(struct Array *pArr) {
             pArr->pBase[i] = 0;
         }
         pArr->cnt = 0;
-        printf("remove all array successfully\n");
+        printf("Remove all array successfully\n");
         return true;
 }
 
+//从小到大排序
 void arr_sort(struct Array *pArr) {
     int i, j, t;
 
@@ -164,6 +174,7 @@ void arr_sort(struct Array *pArr) {
     }
 }
 
+//倒序
 void arr_reverse(struct Array *pArr) {
     int i = 0;
     int j = pArr->cnt-1;
@@ -178,9 +189,10 @@ void arr_reverse(struct Array *pArr) {
     }
 }
 
+//输出数组
 void arr_show(struct Array *pArr) {
     if (is_empty(pArr)) {
-        printf("array is empty\n");
+        printf("Array is empty\n");
     }
     else {
         for (int i = 0; i < pArr->cnt; ++i) {
@@ -190,6 +202,7 @@ void arr_show(struct Array *pArr) {
     }
 }
 
+//求和
 void arr_sum(struct Array *pArr) {
     int sum = 0;
 
@@ -201,9 +214,10 @@ void arr_sum(struct Array *pArr) {
         sum = sum + pArr->pBase[i];
     }
 
-    printf("sum is %d\n", sum);
+    printf("Sum is %d\n", sum);
 }
 
+//求平均数
 void arr_avg(struct Array *pArr) {
     int sum = 0;
     float avg = 0;
@@ -214,22 +228,24 @@ void arr_avg(struct Array *pArr) {
 
     avg = sum/pArr->cnt;
 
-    printf("average is %.2f\n", avg);
+    printf("Average is %.2f\n", avg);
 }
 
+//切片(Beta)
 void arr_slice(struct Array *pArr, int a, int b) {    //Beta
     int cnt_new;
     if (is_empty(pArr)) {
-        printf("array is empty\n");
+        printf("Array is empty\n");
         return;
     }
     if(a >= b || a < 0 || b <= 0) {
-        printf("invalid argument\n");
+        printf("Invalid argument\n");
         return;
     }
     if (b > pArr->cnt) {
         b = pArr->cnt;
     }
+
     cnt_new = b - a;
     pArr->cnt = cnt_new;
     //pArr->pBase = (int *)realloc(sizeof(int) * pArr->);
@@ -237,6 +253,7 @@ void arr_slice(struct Array *pArr, int a, int b) {    //Beta
 
 }
 
+//查找数组元素
 bool arr_find(struct Array *pArr, int search) {
     int i;
 
@@ -251,15 +268,16 @@ bool arr_find(struct Array *pArr, int search) {
         }
     }
     if (i < pArr->cnt) {
-        printf("your search content has be found. %d\n", i+1);
+        printf("Your search content has be found. %d\n", i+1);
         return true;
     }
 
-    printf("your search content has not be found. \n");
+    printf("Your search content has not be found. \n");
         return false;
 
 }
 
+//判断数组是否为空
 bool is_empty(struct Array *pArr) {
     if (pArr->cnt == 0) {
         return true;
@@ -267,6 +285,7 @@ bool is_empty(struct Array *pArr) {
     return false;
 }
 
+//判断数组是否已满
 bool is_full(struct Array *pArr) {
     if (pArr->cnt == pArr->len) {
         return true;
